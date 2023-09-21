@@ -5,10 +5,20 @@ class article:
     description = ""
     taglist = []
 
-    def __init__(self, isComplete, description, taglist, duedate):
+    # for parsing existing plaintext article
+    def __init__(self, ln):
         self.isComplete = isComplete
         self.description = description
         self.duedate = duedate
+
+    # For adding new articles
+    def __init__(self, isComplete, description, taglist)
+        self.isComplete = isComplete
+        self.description = description
+        self.duedate = duedate
+
+    def parse(ln)
+        pass
 
 def read_file(file):
     with open(file, 'r', encoding="utf-8") as f:

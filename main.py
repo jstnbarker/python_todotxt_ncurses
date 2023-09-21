@@ -55,6 +55,9 @@ class article_obj:
     def getTaglist(self):
         return self.taglist
 
+    def getDuedate(self):
+        return self.duedate
+
 
 def read_file(file):
     with open(file, 'r', encoding="utf-8") as f:
@@ -64,6 +67,7 @@ def display_list(selected_row):
     width=curses.COLS-1
     completion = curses.newwin(curses.LINES, 1, 0, 0)
     description = curses.newwin(curses.LINES, 40, 0, 2)
+    duedate = curses.newwin(curses.LINES, 20, 0, 41)
     completion.clear()
 
     completion.refresh()
@@ -80,6 +84,8 @@ def display_list(selected_row):
             completion.addstr(y, x, mark)
             description.addstr(y, x, article.getDescription(),
                                curses.A_REVERSE)
+            duedate.addstr(y,x,article.getDuedate(), curses.A_REVERSE)
+            duedate.refresh()
             completion.refresh()
             description.refresh()
         else:
@@ -87,6 +93,8 @@ def display_list(selected_row):
             completion.refresh()
             description.addstr(y, x, article.getDescription())
             description.refresh()
+            duedate.addstr(y,x,article.getDuedate())
+            duedate.refresh()
 
 def home(stdscr):
     curses.curs_set(0)
@@ -102,10 +110,10 @@ def home(stdscr):
         c = stdscr.getch()
         if c == ord('q'):
             break
-        elif c == ord('j'):
+        elif c == ord('j') and current_row < len(article_list):
             current_row+=1
             display_list(current_row)
-        elif c == ord('k') and current_row < len(article_list):
+        elif c == ord('k') and current_row > 0:
             current_row-=1
             display_list(current_row)
         elif c == ord('x'):

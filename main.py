@@ -43,16 +43,16 @@ class article_obj:
     def complete(self):
         self.isComplete = not self.isComplete
 
-    def getDescription():
+    def getDescription(self):
         return self.description
     
-    def getDue():
+    def getDue(self):
         return self.duedate
     
-    def getContext():
+    def getContext(self):
         return self.context
 
-    def getTaglist():
+    def getTaglist(self):
         return self.taglist
 
 
@@ -60,28 +60,33 @@ def read_file(file):
     with open(file, 'r', encoding="utf-8") as f:
         return f.read()
 
-def display_list(stdscr, selected_row):
-    stdscr.clear()
-
+def display_list(selected_row):
     width=curses.COLS-1
-    completion = curses.newwin(40, 2, 1, 0)
+    completion = curses.newwin(curses.LINES, 1, 0, 0)
+    description = curses.newwin(curses.LINES, 40, 0, 2)
     completion.clear()
 
-    for i, article in enumerate(article_list):
-        x = 1
-        y = i + 1
+    completion.refresh()
 
+    for i, article in enumerate(article_list):
+        x = 0
+        y = i + 1
 
         mark = " "
         if(article.isComplete):
             mark="x"
 
         if i == selected_row:
-            completion.attron(curses.A_REVERSE)
-            completion.addstr(y, x, mark)
-            completion.attroff(curses.A_REVERSE)
+            completion.addstr(y, x, mark, curses.A_REVERSE)
+            description.addstr(y, x, article.getDescription(),
+                               curses.A_REVERSE)
+            completion.refresh()
+            description.refresh()
         else:
             completion.addstr(y,x,mark)
+            completion.refresh()
+            description.addstr(y, x, article.getDescription())
+            description.refresh()
 
 def home(stdscr):
     stdscr.clear()
@@ -91,20 +96,20 @@ def home(stdscr):
     stdscr.nodelay(1)
 
     current_row = 0
-    display_list(stdscr, current_row)
+    display_list(current_row)
     while True:
         c = stdscr.getch()
         if c == ord('q'):
             break
         elif c == ord('j'):
             current_row+=1
-            display_list(stdscr, current_row)
+            display_list(current_row)
         elif c == ord('k') and current_row < len(article_list):
             current_row-=1
-            display_list(stdscr, current_row)
+            display_list(current_row)
         elif c == ord('x'):
             article_list[current_row].complete()
-            display_list(stdscr, current_row)
+            display_list(current_row)
 
 if __name__ == '__main__':
     readlist=read_file(sys.argv[1])

@@ -43,9 +43,6 @@ class article_obj:
     def complete(self):
         self.isComplete = not self.isComplete
 
-    def getComplete():
-        return self.isComplete
-
     def getDescription():
         return self.description
     
@@ -66,21 +63,25 @@ def read_file(file):
 def display_list(stdscr, selected_row):
     stdscr.clear()
 
+    width=curses.COLS-1
+    completion = curses.newwin(40, 2, 1, 0)
+    completion.clear()
+
     for i, article in enumerate(article_list):
         x = 1
         y = i + 1
 
-        width=curses.COLS-1
-        columns=4
 
-        completionCol = curses.newwin(curses.LINES,3,0,0)
+        mark = " "
+        if(article.isComplete):
+            mark="x"
 
         if i == selected_row:
-            stdscr.attron(curses.A_REVERSE)
-            stdscr.addstr(y, x, str(article))
-            stdscr.attroff(curses.A_REVERSE)
+            completion.attron(curses.A_REVERSE)
+            completion.addstr(y, x, mark)
+            completion.attroff(curses.A_REVERSE)
         else:
-            stdscr.addstr(y,x,str(article))
+            completion.addstr(y,x,mark)
 
 def home(stdscr):
     stdscr.clear()
@@ -104,6 +105,7 @@ def home(stdscr):
         elif c == ord('x'):
             article_list[current_row].complete()
             display_list(stdscr, current_row)
+
 if __name__ == '__main__':
     readlist=read_file(sys.argv[1])
     lines = readlist.splitlines()

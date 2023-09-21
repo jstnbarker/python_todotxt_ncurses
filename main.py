@@ -1,13 +1,16 @@
 import sys
+import curses
+from curses import wrapper 
 
 class todolist:
     pass
 
-class article:
+class article_obj:
     isComplete = False
     description = ""
     taglist = []
     duedate = "1970-01-01"
+    context = ""
 
     # for parsing existing plaintext articles
     def __init__(self, ln):
@@ -23,31 +26,81 @@ class article:
 
             # Check if current item is a tag
             if(flag == "+"):
-                current.replace("","+")
-                self.taglist.append(current)
-                pass
-
+                self.taglist.append(current.replace("+",""))
+            elif(flag == "@"):
+                current=current.replace("@","")
+                self.context=current
             elif(current[0:4:1] == "due:"):
-                print(current[3:])
-                self.duedate=current[3:]
-
+                self.duedate=current[4:]
             # Current item has no flag, must be part of description
             else: 
                 self.description+=raw[0]
-
             raw.pop(0)
 
-        print(self.isComplete, self.description, self.taglist)
+    def __str__(self):
+        return f"{self.isComplete}, {self.description}, {self.context}, {self.taglist}, {self.duedate}"
+
+    def getComplete():
+        return self.isComplete
+
+    def getDescription():
+        return self.description
+    
+    def getDue():
+        return self.duedate
+    
+    def getContext():
+        return self.context
+
+    def getTaglist():
+        return self.taglist
+
 
 def read_file(file):
     with open(file, 'r', encoding="utf-8") as f:
         return f.read()
 
+def display_list(stdscr, selected_row):
+    stdscr.clear()
+
+    for i, article in enumerate(article_list):
+        x = 1
+        y = i + 1
+
+        if i == selected_row:
+            stdscr.attron(curses.A_REVERSE)
+            stdscr.addstr(y, x, str(article))
+            stdscr.attroff(curses.A_REVERSE)
+        else:
+            stdscr.addstr(y,x,str(article))
+
+def home(stdscr):
+    stdscr.clear()
+    stdscr.refresh()
+    stdscr.getkey()
+
+    stdscr.nodelay(1)
+
+    current_row = 0
+    display_list(stdscr, current_row)
+    while True:
+        c = stdscr.getch()
+        if c == ord('q'):
+            break
+        elif c == ord('j'):
+            current_row+=1
+            display_list(stdscr, current_row)
+        elif c == ord('k') and current_row < len(article_list):
+            current_row-=1
+            display_list(stdscr, current_row)
+
 if __name__ == '__main__':
     readlist=read_file(sys.argv[1])
     lines = readlist.splitlines()
 
-    
+    article_list = []
     for line in lines:
-        print(line)
-        item = article(line)
+        article = article_obj(line)
+        article_list.append(article)
+
+    wrapper(home)

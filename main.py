@@ -34,11 +34,14 @@ class article_obj:
                 self.duedate=current[4:]
             # Current item has no flag, must be part of description
             else: 
-                self.description+=raw[0]
+                self.description+=raw[0]+" "
             raw.pop(0)
 
     def __str__(self):
         return f"{self.isComplete}, {self.description}, {self.context}, {self.taglist}, {self.duedate}"
+
+    def complete(self):
+        self.isComplete = not self.isComplete
 
     def getComplete():
         return self.isComplete
@@ -67,6 +70,11 @@ def display_list(stdscr, selected_row):
         x = 1
         y = i + 1
 
+        width=curses.COLS-1
+        columns=4
+
+        completionCol = curses.newwin(curses.LINES,3,0,0)
+
         if i == selected_row:
             stdscr.attron(curses.A_REVERSE)
             stdscr.addstr(y, x, str(article))
@@ -93,7 +101,9 @@ def home(stdscr):
         elif c == ord('k') and current_row < len(article_list):
             current_row-=1
             display_list(stdscr, current_row)
-
+        elif c == ord('x'):
+            article_list[current_row].complete()
+            display_list(stdscr, current_row)
 if __name__ == '__main__':
     readlist=read_file(sys.argv[1])
     lines = readlist.splitlines()

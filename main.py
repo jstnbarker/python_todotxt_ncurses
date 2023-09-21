@@ -77,7 +77,7 @@ def display_list(selected_row):
             mark="x"
 
         if i == selected_row:
-            completion.addstr(y, x, mark, curses.A_REVERSE)
+            completion.addstr(y, x, mark)
             description.addstr(y, x, article.getDescription(),
                                curses.A_REVERSE)
             completion.refresh()
@@ -89,6 +89,7 @@ def display_list(selected_row):
             description.refresh()
 
 def home(stdscr):
+    curses.curs_set(0)
     stdscr.clear()
     stdscr.refresh()
     stdscr.getkey()
